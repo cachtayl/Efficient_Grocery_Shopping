@@ -1,6 +1,6 @@
-from ast import Continue
 import json
 import os.path
+import re
 
 def main():
     os.system('clear')
@@ -32,7 +32,7 @@ def registerStore():
     while(True):
         aisle_name = input("Category: ")
         number = input("Row: ")
-        new_store[int(number)] = aisle_name
+        new_store[number] = aisle_name
         if input("Continue? y/n: ") == "n":
             break
         print("\n")
@@ -52,7 +52,7 @@ def makeList():
     file = open("stores.json", "r")
 
     content = file.read()
-    stores = json.loads(content, object_hook=lambda d: {int(k) if k != 'store_name' else k : v for k,v in d.items()})
+    stores = json.loads(content)
     for idx,store in enumerate(stores):
         print(idx , ":" , store['store_name'])
     choice = input("Choose a Store: ")
@@ -64,10 +64,11 @@ def makeList():
     store.pop('store_name')
     
     aisles = ""
-    for aisle in sorted(store.keys()):
+    for aisle in sorted(store.keys(), key=natural_key):
         num = store[aisle]
         aisles += str(aisle) + ": "+ str(num) +"\n"
     print(aisles)
+    
     print("Enter your items and it's category\n")
     shopping_list = {}
     while(True):
@@ -84,18 +85,19 @@ def makeList():
     
     # Making the list 
     orderedList = ""
-    for k,v in shopping_list.items():
-        k = int(k)
-    for row in sorted(shopping_list.keys()):
+    for row in sorted(shopping_list.keys(), key=natural_key):
         for item in shopping_list[row]:
             orderedList += item + "\n"
-    
     os.system('clear')
 
     file_name = input("Name your file: ") + ".txt"
     file = open(file_name, "w")
     file.write(orderedList)
     file.close()
+
+#alphanumeric sort for list
+def natural_key(string_):
+    return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
 
 if __name__ == "__main__":
     main()
