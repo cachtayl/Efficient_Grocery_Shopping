@@ -1,8 +1,10 @@
 [
     {
         "store_name": "Vons",
-        "1": "Produce",
-        "3": "Dairy",
-        "2": "Bread"
+        "12": "Produce",
+        "4": "Canned Goods",
+        "11": "Frozen Foods",
+        "15": "Desserts/Pasteries ",
+        "1": "Cereal / Crackers "
     }
 ]

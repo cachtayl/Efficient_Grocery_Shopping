@@ -32,7 +32,7 @@ def registerStore():
     while(True):
         aisle_name = input("Category: ")
         number = input("Row: ")
-        new_store[number] = aisle_name
+        new_store[int(number)] = aisle_name
         if input("Continue? y/n: ") == "n":
             break
         print("\n")
@@ -52,20 +52,21 @@ def makeList():
     file = open("stores.json", "r")
 
     content = file.read()
-    stores = json.loads(content)
+    stores = json.loads(content, object_hook=lambda d: {int(k) if k != 'store_name' else k : v for k,v in d.items()})
     for idx,store in enumerate(stores):
         print(idx , ":" , store['store_name'])
     choice = input("Choose a Store: ")
 
     os.system('clear')
     store = stores[int(choice)]
-    
+
     print("\n" + store['store_name'] + " has aisles: ")
+    store.pop('store_name')
+    
     aisles = ""
     for aisle in sorted(store.keys()):
         num = store[aisle]
-        if(aisle != "store_name"):
-            aisles += aisle + ": "+ num + "\n"
+        aisles += str(aisle) + ": "+ str(num) +"\n"
     print(aisles)
     print("Enter your items and it's category\n")
     shopping_list = {}
@@ -83,6 +84,8 @@ def makeList():
     
     # Making the list 
     orderedList = ""
+    for k,v in shopping_list.items():
+        k = int(k)
     for row in sorted(shopping_list.keys()):
         for item in shopping_list[row]:
             orderedList += item + "\n"
