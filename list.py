@@ -3,8 +3,9 @@ import os.path
 import re
 
 def main():
+    #clears the terminal
     os.system('clear')
-    # if json db does not exist create one
+    # if json db does not exist, then create one
     if os.path.exists('stores.json') == False: 
         file = open("stores.json", "w")
         file.write('[]')
@@ -15,7 +16,7 @@ def main():
         makeList()
     else:
         registerStore()
-        
+#inserting a store into the db
 def registerStore():
     os.system('clear')
     store_name = input("Enter the name of the store: ")
@@ -46,7 +47,7 @@ def registerStore():
 
     file.close()
     main()
-
+#input the store and items you are getting
 def makeList():
     os.system('clear')
     file = open("stores.json", "r")
@@ -95,7 +96,7 @@ def makeList():
     file.write(orderedList)
     file.close()
 
-#alphanumeric sort for list
+#alphanumeric sort for keys
 def natural_key(string_):
     return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
 
