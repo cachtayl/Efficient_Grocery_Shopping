@@ -1,6 +1,7 @@
 import json
 import os.path
 import re
+from PySide2 import QtGui
 
 def main():
     #clears the terminal
