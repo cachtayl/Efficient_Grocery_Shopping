@@ -120,16 +120,16 @@ class MainWindow(QMainWindow):
         #alphanumeric sort for keys
         def natural_key(string_):
             return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
-        nums = []
+        self.nums = []
         for aisle_num in sorted(self.store.keys(), key=natural_key):
             name = self.store[aisle_num]
-            nums.append(aisle_num)
+            self.nums.append(aisle_num)
             self.aisles.addItem(name)
         user_item = QLineEdit()
         def add_item():
             if user_item.text():
                 selectedAisle_name = self.aisles.currentText()
-                selectedAisle_num = nums[self.aisles.currentIndex()]
+                selectedAisle_num = self.nums[self.aisles.currentIndex()]
                 rowPos = self.tableWidget.rowCount()
                 self.tableWidget.insertRow(rowPos)
                 self.tableWidget.setItem(rowPos, 0, QTableWidgetItem(user_item.text()))
@@ -166,7 +166,20 @@ class MainWindow(QMainWindow):
         shopping_list = QWidget()
         shopping_list.setLayout(shopping_list_layout)
         self.stacklayout.addWidget(shopping_list)
-        
+    def update_shopping_tab(self):
+        self.aisles.clear()
+        self.store = self.stores[self.listWidget.row(self.listWidget.currentItem())]
+        self.store.pop('store_name')
+        #alphanumeric sort for keys
+        def natural_key(string_):
+            return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
+        self.nums = []
+        for aisle_num in sorted(self.store.keys(), key=natural_key):
+            name = self.store[aisle_num]
+            self.nums.append(aisle_num)
+            self.aisles.addItem(name)
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
     
     def changeTab(self, page_idx):
         #update the stores list every page change
@@ -183,17 +196,8 @@ class MainWindow(QMainWindow):
             self.toolbar.toggleViewAction().trigger()
             None
         if page_idx == 2:
-            #Reset the shopping list Tab
-            self.aisles.clear()
-            self.store = self.stores[self.listWidget.row(self.listWidget.currentItem())]
-            self.store.pop('store_name')
-            #alphanumeric sort for keys
-            def natural_key(string_):
-                return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
-            for aisle in sorted(self.store.keys(), key=natural_key):
-                num = self.store[aisle]
-                self.aisles.addItem(num)
-            
+            #Update the shopping list Tab
+            self.update_shopping_tab()
         self.stacklayout.setCurrentIndex(page_idx)
 
 
