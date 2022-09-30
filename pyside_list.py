@@ -1,7 +1,9 @@
 import json
 import os
+import re
 import sys
 import faulthandler
+from unicodedata import name
 faulthandler.enable()
 
 from PySide2.QtCore import QSize, Qt
@@ -19,6 +21,7 @@ class MainWindow(QMainWindow):
         db = open("stores.json", "r")
         content = db.read()
         self.stores = json.loads(content)
+        #BUG will break if json file is empty
         self.store = self.stores[0]
         db.close()
         
@@ -35,7 +38,7 @@ class MainWindow(QMainWindow):
         
         self.main_menu_tab()    #stack index0
         self.register_tab()     #stack index1
-        self.shopping_list_tab()         #stack index2
+        self.shopping_list_tab()
 
         widget = QWidget()
         widget.setLayout(self.stacklayout)
@@ -107,14 +110,63 @@ class MainWindow(QMainWindow):
     
     def shopping_list_tab(self):
         self.toolbar.toggleViewAction().trigger()
-        shopping_list_layout = QHBoxLayout()
-        btn = QPushButton("Cancel")
-        btn.pressed.connect(lambda: self.changeTab(0))
-        shopping_list_layout.addWidget(btn)
+        shopping_list_layout = QVBoxLayout()
+
+        enter_item_layout = QVBoxLayout()
+        
+        self.store = self.stores[self.listWidget.row(self.listWidget.currentItem())]
+        self.aisles = QComboBox()
+        self.store.pop('store_name')
+        #alphanumeric sort for keys
+        def natural_key(string_):
+            return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
+        nums = []
+        for aisle_num in sorted(self.store.keys(), key=natural_key):
+            name = self.store[aisle_num]
+            nums.append(aisle_num)
+            self.aisles.addItem(name)
+        user_item = QLineEdit()
+        def add_item():
+            if user_item.text():
+                selectedAisle_name = self.aisles.currentText()
+                selectedAisle_num = nums[self.aisles.currentIndex()]
+                rowPos = tableWidget.rowCount()
+                tableWidget.insertRow(rowPos)
+                tableWidget.setItem(rowPos, 0, QTableWidgetItem(user_item.text()))
+                tableWidget.setItem(rowPos, 1, QTableWidgetItem(selectedAisle_num))
+                tableWidget.setItem(rowPos, 2, QTableWidgetItem(selectedAisle_name))
+                user_item.clear()
+            else: None
+        add_btn = QPushButton("Add Item")
+        add_btn.pressed.connect(add_item)
+        
+
+        enter_item_layout.addWidget(user_item)
+        enter_item_layout.addWidget(self.aisles)
+        enter_item_layout.addWidget(add_btn)
+        shopping_list_layout.addLayout(enter_item_layout)
+
+        tableWidget = QTableWidget()
+        tableWidget.setColumnCount(3)
+        tableWidget.verticalHeader().setVisible(False)
+        tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Item"))
+        tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Row"))
+        tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("Aisle"))
+        tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+        tableWidget.horizontalHeader().setStretchLastSection(True)
+        tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        
+        
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.pressed.connect(lambda: self.changeTab(0))
+        
+        shopping_list_layout.addWidget(tableWidget)
+        shopping_list_layout.addWidget(cancel_btn)
         
         shopping_list = QWidget()
         shopping_list.setLayout(shopping_list_layout)
         self.stacklayout.addWidget(shopping_list)
+        
     
     def changeTab(self, page_idx):
         #update the stores list every page change
@@ -131,8 +183,17 @@ class MainWindow(QMainWindow):
             self.toolbar.toggleViewAction().trigger()
             None
         if page_idx == 2:
+            #Reset the shopping list Tab
+            self.aisles.clear()
             self.store = self.stores[self.listWidget.row(self.listWidget.currentItem())]
-            print(self.store)
+            self.store.pop('store_name')
+            #alphanumeric sort for keys
+            def natural_key(string_):
+                return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
+            for aisle in sorted(self.store.keys(), key=natural_key):
+                num = self.store[aisle]
+                self.aisles.addItem(num)
+            
         self.stacklayout.setCurrentIndex(page_idx)
 
 
