@@ -130,11 +130,11 @@ class MainWindow(QMainWindow):
             if user_item.text():
                 selectedAisle_name = self.aisles.currentText()
                 selectedAisle_num = nums[self.aisles.currentIndex()]
-                rowPos = tableWidget.rowCount()
-                tableWidget.insertRow(rowPos)
-                tableWidget.setItem(rowPos, 0, QTableWidgetItem(user_item.text()))
-                tableWidget.setItem(rowPos, 1, QTableWidgetItem(selectedAisle_num))
-                tableWidget.setItem(rowPos, 2, QTableWidgetItem(selectedAisle_name))
+                rowPos = self.tableWidget.rowCount()
+                self.tableWidget.insertRow(rowPos)
+                self.tableWidget.setItem(rowPos, 0, QTableWidgetItem(user_item.text()))
+                self.tableWidget.setItem(rowPos, 1, QTableWidgetItem(selectedAisle_num))
+                self.tableWidget.setItem(rowPos, 2, QTableWidgetItem(selectedAisle_name))
                 user_item.clear()
             else: None
         add_btn = QPushButton("Add Item")
@@ -146,21 +146,21 @@ class MainWindow(QMainWindow):
         enter_item_layout.addWidget(add_btn)
         shopping_list_layout.addLayout(enter_item_layout)
 
-        tableWidget = QTableWidget()
-        tableWidget.setColumnCount(3)
-        tableWidget.verticalHeader().setVisible(False)
-        tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Item"))
-        tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Row"))
-        tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("Aisle"))
-        tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
-        tableWidget.horizontalHeader().setStretchLastSection(True)
-        tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableWidget = QTableWidget()
+        self.tableWidget.setColumnCount(3)
+        self.tableWidget.verticalHeader().setVisible(False)
+        self.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Item"))
+        self.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Row"))
+        self.tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("Aisle"))
+        self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         
         
         cancel_btn = QPushButton("Cancel")
         cancel_btn.pressed.connect(lambda: self.changeTab(0))
         
-        shopping_list_layout.addWidget(tableWidget)
+        shopping_list_layout.addWidget(self.tableWidget)
         shopping_list_layout.addWidget(cancel_btn)
         
         shopping_list = QWidget()
