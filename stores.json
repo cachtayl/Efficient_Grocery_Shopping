@@ -1,17 +1,88 @@
 [
     {
-        "store_name": "Vons Laurel Canyon",
+        "store_name": "Vons / Laurel Canyon Blvd, Los Angeles, CA",
         "1": [
+            "Soups",
+            "Pasta",
             "Packaged Dinners",
             "Hispanic Foods",
             "Kosher Foods"
         ],
         "2": [
+            "Condiments",
+            "Canned Vegetables",
+            "Canned Fish",
+            "Cake Mixes",
             "Cooking Oil",
             "Spices"
         ],
         "3": [
-            "Coffee"
+            "Tea",
+            "Cereal",
+            "Hot Cereal",
+            "Coffee",
+            "Cookware"
+        ],
+        "4": [
+            "Vegetables",
+            "Entrees",
+            "Dinners",
+            "Pizza",
+            "Potatoes"
+        ],
+        "5": [
+            "Jam and Jellies",
+            "Crackers",
+            "Cookies",
+            "Ice Cream"
+        ],
+        "6": [
+            "Feminine Care",
+            "Oral Care",
+            "Bar Soap",
+            "Shampoo",
+            "Facial Tissue",
+            "Shaving Needs"
+        ],
+        "7": [
+            "Candy",
+            "Baby Toiletries",
+            "Baby Food",
+            "Greetings Cards"
+        ],
+        "8": [
+            "Cat Food",
+            "Cat Litter",
+            "Bath Tissue",
+            "Paper Towels",
+            "Dog Food",
+            "Cups and Plates"
+        ],
+        "9": [
+            "Trash Bags",
+            "Air Fresheners",
+            "Fabric care",
+            "Dish Soap",
+            "Cleaning Supplies"
+        ],
+        "10": [
+            "Mixers",
+            "Soft Drinks",
+            "Water",
+            "Flavored Beverages",
+            "Specialty Bevs"
+        ],
+        "11": [
+            "Imported Wines",
+            "Premium Wines",
+            "Chips",
+            "Popcorn and Nuts"
+        ],
+        "12": [
+            "Champagne",
+            "Spirits",
+            "Micro Brew",
+            "Beer"
         ]
     }
 ]
