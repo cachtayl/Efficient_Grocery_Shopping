@@ -62,13 +62,15 @@ class MainWindow(QMainWindow):
         delete_btn.setToolTip("Delete selected Store")
         delete_btn.triggered.connect(self.delete_store)
         self.toolbar.addAction(delete_btn)
-
+        delete_btn.setEnabled(False)
+        
         #Edit icon by Icons8: "https://img.icons8.com/ios-glyphs/30/000000/edit--v1.png"
         edit_btn = QAction(QIcon("./icons/icons8-edit-24.png"), "Edit Store", self)
         edit_btn.setToolTip("Edit selected Store")
         edit_btn.triggered.connect(self.edit_store)
         self.toolbar.addAction(edit_btn)
-          
+        edit_btn.setEnabled(False)
+        
         self.storesListWidget = QListWidget()
 
         for store in self.stores:
@@ -82,7 +84,15 @@ class MainWindow(QMainWindow):
         main_menu_layout.addWidget(list_btn)
         
         #enable button if there is a selection
-        def enable(): return list_btn.setEnabled(True) if len(self.storesListWidget.selectedItems()) != 0 else list_btn.setEnabled(False)
+        def enable():  
+            if len(self.storesListWidget.selectedItems()) != 0:
+                list_btn.setEnabled(True)
+                delete_btn.setEnabled(True)
+                edit_btn.setEnabled(True)
+            else:
+                list_btn.setEnabled(False)
+                delete_btn.setEnabled(False)
+                edit_btn.setEnabled(False)
         self.storesListWidget.itemSelectionChanged.connect(enable)
             
         menu_widget = QWidget()
@@ -94,8 +104,25 @@ class MainWindow(QMainWindow):
             listWidgetItem = QListWidgetItem(store['store_name'])
             self.storesListWidget.addItem(listWidgetItem)
     def delete_store(self):
+        #update the stores list 
+        db = open("stores.json", "r")
+        content = db.read()
+        self.stores = json.loads(content)
+        db.close()
+        
+        selected = self.storesListWidget.currentItem()
+        selected_idx = self.storesListWidget.row(selected)
+        del self.stores[selected_idx]
+        #overwrite json file with the new stores list
+        json_obj = json.dumps(self.stores, indent=4)
+        db = open("stores.json", "w")
+        db.write(json_obj)
+        db.close()
+        self.storesListWidget.takeItem(selected_idx)
+        self.changeTab(0)
         pass
     def edit_store(self):
+        print("edit btn pressed")
         pass
 
     def registerTab(self):
