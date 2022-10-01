@@ -30,12 +30,12 @@ class MainWindow(QMainWindow):
         font.setPointSize(10)
         # set the font for the top level window (and any of its children):
         self.window().setFont(font)
-        self.setWindowTitle("Efficient Grocery List Generator")
         self.stacklayout = QStackedLayout()
         
         self.menuTab()          #stack index0
         self.registerTab()      #stack index1
         self.shoppingListTab()  #stack index2
+        self.setWindowTitle("Main Menu")
         self.resize(300, 300)
         
         widget = QWidget()
@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def menuTab(self):
-        
         main_menu_layout = QVBoxLayout()
         
         self.toolbar = QToolBar("Store Toolbar")
@@ -169,7 +168,6 @@ class MainWindow(QMainWindow):
         self.stacklayout.addWidget(register_widget)
     
     def shoppingListTab(self):
-        self.resize(500, 300)
         self.toolbar.toggleViewAction().trigger()
         shopping_list_layout = QVBoxLayout()
 
@@ -178,43 +176,21 @@ class MainWindow(QMainWindow):
         user_item = QLineEdit()
         user_item.setPlaceholderText("E.g. Bananas")
 
-        
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.aisles = MyComboBox()
-        self.aisles.setPlaceholderText("Which Aisle is this in?")
-        self.aisles.setCurrentIndex(-1)
-        self.store.pop('store_name')
+        self.categories = MyComboBox()
+        self.categories.setPlaceholderText("Which Aisle is this in?")
+        self.categories.setCurrentIndex(-1)
+        
         #alphanumeric sort for keys
         def natural_key(string_):
             return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
         self.nums = []
+        self.store.pop('store_name')
         for aisle_num in sorted(self.store.keys(), key=natural_key):
             name = self.store[aisle_num]
             self.nums.append(aisle_num)
-            self.aisles.addItem(name)
+            self.categories.addItem(name)
         
-        def add_item():
-            if user_item.text() and self.aisles.currentIndex() != -1:
-                selectedAisle_name = self.aisles.currentText()
-                selectedAisle_num = self.nums[self.aisles.currentIndex()]
-                rowPos = self.shoppingTableWidget.rowCount()
-                self.shoppingTableWidget.insertRow(rowPos)
-                self.shoppingTableWidget.setItem(rowPos, 0, MyTableWidgetItem(selectedAisle_num))
-                self.shoppingTableWidget.setItem(rowPos, 1, MyTableWidgetItem(user_item.text()))
-                self.shoppingTableWidget.setItem(rowPos, 2, MyTableWidgetItem(selectedAisle_name))
-                self.shoppingTableWidget.resizeColumnToContents(0)
-                self.shoppingTableWidget.sortItems(0, Qt.AscendingOrder)
-                user_item.clear()
-                self.aisles.setCurrentIndex(-1)
-            else: None 
-        add_btn = QPushButton("Add Item")
-        add_btn.pressed.connect(add_item)
-        
-        nest_layout.addWidget(user_item)
-        nest_layout.addWidget(self.aisles)
-        nest_layout.addWidget(add_btn)
-        shopping_list_layout.addLayout(nest_layout)
-
         self.shoppingTableWidget = QTableWidget()
         self.shoppingTableWidget.setColumnCount(3)
         self.shoppingTableWidget.verticalHeader().setVisible(False)
@@ -225,6 +201,30 @@ class MainWindow(QMainWindow):
         self.shoppingTableWidget.setColumnWidth(0, 20)
         self.shoppingTableWidget.setColumnWidth(1, 220)
         self.shoppingTableWidget.horizontalHeader().setStretchLastSection(True)
+
+        def add_item():
+            if user_item.text() and self.categories.currentIndex() != -1:
+                selectedAisle_name = self.categories.currentText()
+                selectedAisle_num = self.nums[self.categories.currentIndex()]
+                rowPos = self.shoppingTableWidget.rowCount()
+                self.shoppingTableWidget.insertRow(rowPos)
+                self.shoppingTableWidget.setItem(rowPos, 0, MyTableWidgetItem(selectedAisle_num))
+                self.shoppingTableWidget.setItem(rowPos, 1, MyTableWidgetItem(user_item.text()))
+                self.shoppingTableWidget.setItem(rowPos, 2, MyTableWidgetItem(selectedAisle_name))
+                self.shoppingTableWidget.resizeColumnToContents(0)
+                self.shoppingTableWidget.sortItems(0, Qt.AscendingOrder)
+                user_item.clear()
+                self.categories.setCurrentIndex(-1)
+            else: None 
+        add_btn = QPushButton("Add Item")
+        add_btn.pressed.connect(add_item)
+        
+        nest_layout.addWidget(user_item)
+        nest_layout.addWidget(self.categories)
+        nest_layout.addWidget(add_btn)
+        shopping_list_layout.addLayout(nest_layout)
+
+        
         
         cancel_btn = QPushButton("Cancel")
         cancel_btn.pressed.connect(lambda: self.changeTab(0))
@@ -235,8 +235,8 @@ class MainWindow(QMainWindow):
         shopping_list = QWidget()
         shopping_list.setLayout(shopping_list_layout)
         self.stacklayout.addWidget(shopping_list)
-    def update_shopping_tab(self):
-        self.aisles.clear()
+    def resetShoppingTab(self):
+        self.categories.clear()
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
         self.store.pop('store_name')
         #alphanumeric sort for keys
@@ -246,12 +246,11 @@ class MainWindow(QMainWindow):
         for aisle_num in sorted(self.store.keys(), key=natural_key):
             name = self.store[aisle_num]
             self.nums.append(aisle_num)
-            self.aisles.addItem(name)
+            self.categories.addItem(name)
         self.shoppingTableWidget.clearContents()
         self.shoppingTableWidget.setRowCount(0)
     
     def changeTab(self, page_idx):
-        self.resize(500, 300)
         #update the stores list every page change
         db = open("stores.json", "r")
         content = db.read()
@@ -262,13 +261,19 @@ class MainWindow(QMainWindow):
             self.toolbar.toggleViewAction().trigger()
             None
         #entering main menu
-        elif page_idx == 0:
+        if page_idx == 0:
+            self.setWindowTitle("Main Menu")
             self.resize(300, 300)
             self.toolbar.toggleViewAction().trigger()
             None
-        if page_idx == 2:
+        elif page_idx == 1:
+            self.setWindowTitle("Register Store")
+            self.resize(500, 300)
+        elif page_idx == 2:
+            self.setWindowTitle("Make Shopping List")
+            self.resize(500, 300)
             #Update the shopping list Tab
-            self.update_shopping_tab()
+            self.resetShoppingTab()
         self.stacklayout.setCurrentIndex(page_idx)
 
 #overwrite tablewidget's less than method to numerically sort
