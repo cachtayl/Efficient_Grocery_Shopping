@@ -189,7 +189,6 @@ class MainWindow(QMainWindow):
                 self.registerTableWidget.setItem(rowPos, 0, MyTableWidgetItem(str(self.row.value())))
                 self.registerTableWidget.setItem(rowPos, 1, MyTableWidgetItem(self.category.text()))
                 self.registerTableWidget.sortItems(0, Qt.AscendingOrder)
-                # self.row.setValue(self.row.value() + 1)
                 self.category.clear()
             else: None
         self.category.returnPressed.connect(add_aisle)
@@ -265,8 +264,7 @@ class MainWindow(QMainWindow):
             for element in category:
                 self.categories.addItem(element)
                 self.nums.append(aisle_num)
-        print(self.nums)
-        print(self.nums)
+    
         self.shoppingTableWidget = QTableWidget()
         self.shoppingTableWidget.setColumnCount(3)
         self.shoppingTableWidget.verticalHeader().setVisible(False)
@@ -281,16 +279,7 @@ class MainWindow(QMainWindow):
         def add_item():
             if self.user_item.text() and self.categories.currentIndex() != -1:
                 selectedAisle_name = self.categories.currentText()
-
-                print(self.nums[self.categories.currentIndex()])
-                print(self.nums)
-                print(self.categories.currentIndex())
                 selectedAisle_num = self.nums[self.categories.currentIndex()]
-                print(selectedAisle_num)
-                print(self.nums[self.categories.currentIndex()])
-                print(self.nums)
-                print(self.categories.currentIndex())
-                
                 rowPos = self.shoppingTableWidget.rowCount()
                 self.shoppingTableWidget.insertRow(rowPos)
                 self.shoppingTableWidget.setItem(rowPos, 0, MyTableWidgetItem(selectedAisle_num))
