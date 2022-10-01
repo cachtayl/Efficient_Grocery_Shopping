@@ -249,11 +249,15 @@ class MainWindow(QMainWindow):
 
         nest_layout = QVBoxLayout()
         
+        item_layout = QHBoxLayout()
+        item_label = QLabel("Item:")
         self.user_item = QLineEdit()
         self.user_item.setPlaceholderText("E.g. Bananas")
+        item_layout.addWidget(item_label)
+        item_layout.addWidget(self.user_item)
         
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.categories = QComboBox()
+        self.categories = MyComboBox()
         self.categories.setPlaceholderText("Which Aisle is this in?")
         self.categories.setCurrentIndex(-1)
         
@@ -294,7 +298,8 @@ class MainWindow(QMainWindow):
         add_btn = QPushButton("Add Item")
         add_btn.pressed.connect(add_item)
         
-        nest_layout.addWidget(self.user_item)
+
+        nest_layout.addLayout(item_layout)
         nest_layout.addWidget(self.categories)
         nest_layout.addWidget(add_btn)
         shopping_list_layout.addLayout(nest_layout)

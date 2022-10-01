@@ -2,87 +2,90 @@
     {
         "store_name": "Vons / Laurel Canyon Blvd, Los Angeles, CA",
         "1": [
-            "Soups",
-            "Pasta",
-            "Packaged Dinners",
+            "Kosher Foods",
             "Hispanic Foods",
-            "Kosher Foods"
+            "Packaged Dinners",
+            "Pasta",
+            "Soups"
         ],
         "2": [
-            "Condiments",
-            "Canned Vegetables",
-            "Canned Fish",
-            "Cake Mixes",
+            "Spices",
             "Cooking Oil",
-            "Spices"
+            "Cake Mixes",
+            "Canned Fish",
+            "Canned Vegetables",
+            "Condiments"
         ],
         "3": [
-            "Tea",
-            "Cereal",
-            "Hot Cereal",
+            "Cookware",
             "Coffee",
-            "Cookware"
+            "Hot Cereal",
+            "Cereal",
+            "Tea"
         ],
         "4": [
-            "Vegetables",
-            "Entrees",
-            "Dinners",
+            "Potatoes",
             "Pizza",
-            "Potatoes"
+            "Dinners",
+            "Entrees",
+            "Vegetables"
         ],
         "5": [
-            "Jam and Jellies",
-            "Crackers",
+            "Ice Cream",
             "Cookies",
-            "Ice Cream"
+            "Crackers",
+            "Jam and Jellies"
         ],
         "6": [
-            "Feminine Care",
-            "Oral Care",
-            "Bar Soap",
-            "Shampoo",
+            "Shaving Needs",
             "Facial Tissue",
-            "Shaving Needs"
+            "Shampoo",
+            "Bar Soap",
+            "Oral Care",
+            "Feminine Care"
         ],
         "7": [
-            "Candy",
-            "Baby Toiletries",
+            "Greetings Cards",
             "Baby Food",
-            "Greetings Cards"
+            "Baby Toiletries",
+            "Candy"
         ],
         "8": [
-            "Cat Food",
-            "Cat Litter",
-            "Bath Tissue",
-            "Paper Towels",
+            "Cups and Plates",
             "Dog Food",
-            "Cups and Plates"
+            "Paper Towels",
+            "Bath Tissue",
+            "Cat Litter",
+            "Cat Food"
         ],
         "9": [
-            "Trash Bags",
-            "Air Fresheners",
-            "Fabric care",
+            "Cleaning Supplies",
             "Dish Soap",
-            "Cleaning Supplies"
+            "Fabric care",
+            "Air Fresheners",
+            "Trash Bags"
         ],
         "10": [
-            "Mixers",
-            "Soft Drinks",
-            "Water",
+            "Specialty Bevs",
             "Flavored Beverages",
-            "Specialty Bevs"
+            "Water",
+            "Soft Drinks",
+            "Mixers"
         ],
         "11": [
-            "Imported Wines",
-            "Premium Wines",
+            "Popcorn and Nuts",
             "Chips",
-            "Popcorn and Nuts"
+            "Premium Wines",
+            "Imported Wines"
         ],
         "12": [
-            "Champagne",
-            "Spirits",
+            "Beer",
             "Micro Brew",
-            "Beer"
+            "Spirits",
+            "Champagne"
+        ],
+        "13": [
+            "Produce"
         ]
     }
 ]
