@@ -9,14 +9,14 @@
     },
     {
         "store_name": "Trader Joes",
-        "12": "Cleaners",
-        "4": "Bread"
+        "4": "Bread",
+        "12": "Cleaners"
     },
     {
         "store_name": "Ralphs",
         "1": "Produce",
-        "3": "Hygiene",
         "4": "Bakery",
+        "5": "Hygiene",
         "11": "Chips"
     }
 ]

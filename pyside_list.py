@@ -119,10 +119,34 @@ class MainWindow(QMainWindow):
         db.write(json_obj)
         db.close()
         self.storesListWidget.takeItem(selected_idx)
-        self.changeTab(0)
+        # self.changeTab(0)
         pass
     def edit_store(self):
-        print("edit btn pressed")
+        #update the stores list 
+        db = open("stores.json", "r")
+        content = db.read()
+        self.stores = json.loads(content)
+        db.close()
+
+        self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
+        self.setWindowTitle("Edit "+self.store['store_name'])
+        self.resize(500, 300)
+        self.resetRegisterTab()
+        self.store_name.setText(self.store['store_name'])
+        
+        #alphanumeric sort for keys
+        def natural_key(string_):
+            return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
+        self.store.pop('store_name')
+        for aisle_num in sorted(self.store.keys(), key=natural_key):
+            rowPos = self.registerTableWidget.rowCount()
+            category = self.store[aisle_num]
+            self.registerTableWidget.insertRow(rowPos)
+            self.registerTableWidget.setItem(rowPos, 0, MyTableWidgetItem(str(aisle_num)))
+            self.registerTableWidget.setItem(rowPos, 1, MyTableWidgetItem(category))
+        self.delete_store()
+        self.toolbar.toggleViewAction().trigger()
+        self.stacklayout.setCurrentIndex(1)
         pass
 
     def registerTab(self):
@@ -180,6 +204,7 @@ class MainWindow(QMainWindow):
         aisle_layout.addWidget(self.registerTableWidget)
 
         def insertStore():
+            self.registerTableWidget.sortItems(0, Qt.AscendingOrder)
             new_store = {"store_name": self.store_name.text()}
             for i in range(self.registerTableWidget.rowCount()):
                 row = self.registerTableWidget.item(i, 0)
@@ -197,9 +222,14 @@ class MainWindow(QMainWindow):
             self.changeTab(0)
         reg_btn = QPushButton("Register")
         reg_btn.pressed.connect(insertStore)
-    
+        
+        def cancel():
+            if 'Edit' in self.windowTitle():
+                insertStore()
+            else:
+                self.changeTab(0)
         cancel_btn = QPushButton("Cancel")
-        cancel_btn.pressed.connect(lambda: self.changeTab(0))
+        cancel_btn.pressed.connect(cancel)
         
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(reg_btn)
@@ -229,7 +259,7 @@ class MainWindow(QMainWindow):
         self.user_item.setPlaceholderText("E.g. Bananas")
 
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.categories = MyComboBox()
+        self.categories = QComboBox()
         self.categories.setPlaceholderText("Which Aisle is this in?")
         self.categories.setCurrentIndex(-1)
         
