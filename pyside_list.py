@@ -129,25 +129,22 @@ class MainWindow(QMainWindow):
         db.close()
 
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.setWindowTitle("Edit "+self.store['store_name'])
+        self.setWindowTitle("Edit "+ self.store['store_name'])
         self.resize(500, 300)
         self.resetRegisterTab()
         self.store_name.setText(self.store['store_name'])
         
-        #alphanumeric sort for keys
-        def natural_key(string_):
-            return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
         self.store.pop('store_name')
-        for aisle_num in sorted(self.store.keys(), key=natural_key):
+        for aisle_num in self.store.keys():
             rowPos = self.registerTableWidget.rowCount()
             category = self.store[aisle_num]
-            self.registerTableWidget.insertRow(rowPos)
-            self.registerTableWidget.setItem(rowPos, 0, MyTableWidgetItem(str(aisle_num)))
-            self.registerTableWidget.setItem(rowPos, 1, MyTableWidgetItem(category))
+            for elem in category:
+                self.registerTableWidget.insertRow(rowPos)
+                self.registerTableWidget.setItem(rowPos, 0, MyTableWidgetItem(str(aisle_num)))
+                self.registerTableWidget.setItem(rowPos, 1, MyTableWidgetItem(elem))
         self.delete_store()
         self.toolbar.toggleViewAction().trigger()
         self.stacklayout.setCurrentIndex(1)
-        pass
 
     def registerTab(self):
         self.toolbar.toggleViewAction().trigger()
@@ -192,7 +189,7 @@ class MainWindow(QMainWindow):
                 self.registerTableWidget.setItem(rowPos, 0, MyTableWidgetItem(str(self.row.value())))
                 self.registerTableWidget.setItem(rowPos, 1, MyTableWidgetItem(self.category.text()))
                 self.registerTableWidget.sortItems(0, Qt.AscendingOrder)
-                self.row.setValue(self.row.value() + 1)
+                # self.row.setValue(self.row.value() + 1)
                 self.category.clear()
             else: None
         self.category.returnPressed.connect(add_aisle)
@@ -210,8 +207,7 @@ class MainWindow(QMainWindow):
                 row = row.text()
                 category = self.registerTableWidget.item(i, 1)
                 category = category.text()
-
-                new_store[row] = category
+                new_store.setdefault(row, []).append(category)
             self.stores.append(new_store)
             json_obj = json.dumps(self.stores, indent=4)
 
@@ -262,16 +258,15 @@ class MainWindow(QMainWindow):
         self.categories.setPlaceholderText("Which Aisle is this in?")
         self.categories.setCurrentIndex(-1)
         
-        #alphanumeric sort for keys
-        def natural_key(string_):
-            return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
         self.nums = []
         self.store.pop('store_name')
-        for aisle_num in sorted(self.store.keys(), key=natural_key):
+        for aisle_num in self.store.keys():
             category = self.store[aisle_num]
-            self.nums.append(aisle_num)
-            self.categories.addItem(category)
-        
+            for element in category:
+                self.categories.addItem(element)
+                self.nums.append(aisle_num)
+        print(self.nums)
+        print(self.nums)
         self.shoppingTableWidget = QTableWidget()
         self.shoppingTableWidget.setColumnCount(3)
         self.shoppingTableWidget.verticalHeader().setVisible(False)
@@ -286,7 +281,16 @@ class MainWindow(QMainWindow):
         def add_item():
             if self.user_item.text() and self.categories.currentIndex() != -1:
                 selectedAisle_name = self.categories.currentText()
+
+                print(self.nums[self.categories.currentIndex()])
+                print(self.nums)
+                print(self.categories.currentIndex())
                 selectedAisle_num = self.nums[self.categories.currentIndex()]
+                print(selectedAisle_num)
+                print(self.nums[self.categories.currentIndex()])
+                print(self.nums)
+                print(self.categories.currentIndex())
+                
                 rowPos = self.shoppingTableWidget.rowCount()
                 self.shoppingTableWidget.insertRow(rowPos)
                 self.shoppingTableWidget.setItem(rowPos, 0, MyTableWidgetItem(selectedAisle_num))
@@ -319,15 +323,13 @@ class MainWindow(QMainWindow):
         self.user_item.clear()
         self.categories.clear()
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.store.pop('store_name')
-        #alphanumeric sort for keys
-        def natural_key(string_):
-            return [int(s) if s.isdigit() else s for s in re.split(r'(\d+)', string_)]
         self.nums = []
-        for aisle_num in sorted(self.store.keys(), key=natural_key):
+        self.store.pop('store_name')
+        for aisle_num in self.store.keys():
             category = self.store[aisle_num]
-            self.nums.append(aisle_num)
-            self.categories.addItem(category)
+            for element in category:
+                self.categories.addItem(element)
+                self.nums.append(aisle_num)
         self.shoppingTableWidget.clearContents()
         self.shoppingTableWidget.setRowCount(0)
     
