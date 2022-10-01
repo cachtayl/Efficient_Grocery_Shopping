@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from sqlite3 import Row
 import sys
 import faulthandler
 from unicodedata import name
@@ -8,7 +9,7 @@ faulthandler.enable()
 
 from PySide2.QtCore import QSize, Qt
 from PySide2.QtWidgets import *
-from PySide2.QtGui import QIcon, QFont
+from PySide2.QtGui import QIcon, QFont, QPalette
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -39,16 +40,19 @@ class MainWindow(QMainWindow):
         self.main_menu_tab()    #stack index0
         self.register_tab()     #stack index1
         self.shopping_list_tab()
-
+        self.resize(300, 300)
+        
         widget = QWidget()
         widget.setLayout(self.stacklayout)
         self.setCentralWidget(widget)
 
     def main_menu_tab(self):
+        
         main_menu_layout = QVBoxLayout()
         
         self.toolbar = QToolBar("Store Toolbar")
-        self.addToolBar(self.toolbar)
+        self.toolbar.setOrientation(Qt.Vertical)
+        self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
         self.toolbar.setIconSize(QSize(20, 20))
         self.toolbar.toggleViewAction().setChecked(False)
         self.toolbar.toggleViewAction().trigger()
@@ -98,24 +102,91 @@ class MainWindow(QMainWindow):
     def edit_store(self):
         pass
     def register_tab(self):
+        
         self.toolbar.toggleViewAction().trigger()
         register_layout = QVBoxLayout() 
-        btn = QPushButton("Cancel")
-        btn.pressed.connect(lambda: self.changeTab(0))
-        register_layout.addWidget(btn)
+        aisle_layout = QVBoxLayout()
+        
+        name_layout = QHBoxLayout()
+        name_label = QLabel("Store Name:")
+        name = QLineEdit()
+        name.setPlaceholderText("E.g. Walmart")
+        name_layout.addWidget(name_label)
+        name_layout.addWidget(name)
+
+        row_layout = QHBoxLayout()
+        row_label = QLabel("Row:")
+        row = QSpinBox()
+        row.setMinimum(1)
+        category_label = QLabel("Contains:")
+        category = QLineEdit()
+        category.setPlaceholderText("E.g. Desserts/Pasteries")
+        row_layout.addWidget(row_label)
+        row_layout.addWidget(row)
+        row_layout.addWidget(category_label)
+        row_layout.addWidget(category)
+        
+        def add_aisle():
+            if category.text():
+                rowPos = self.registerTableWidget.rowCount()
+                self.registerTableWidget.insertRow(rowPos)
+                self.registerTableWidget.setItem(rowPos, 0, MyTableWidgetItem(str(row.value())))
+                self.registerTableWidget.setItem(rowPos, 1, MyTableWidgetItem(category.text()))
+                self.registerTableWidget.sortItems(0, Qt.AscendingOrder)
+                category.clear()
+            else: None 
+        add_btn = QPushButton("Add Item")
+        add_btn.pressed.connect(add_aisle)
+        
+        self.registerTableWidget = QTableWidget()
+        self.registerTableWidget.setColumnCount(2)
+        self.registerTableWidget.verticalHeader().setVisible(False)
+        self.registerTableWidget.setHorizontalHeaderItem(0, MyTableWidgetItem("Row"))
+        self.registerTableWidget.setHorizontalHeaderItem(1, MyTableWidgetItem("Category"))
+        self.registerTableWidget.setColumnWidth(0, 20)
+        self.registerTableWidget.horizontalHeader().setStretchLastSection(True)
+    
+        btn_layout = QHBoxLayout()
+        
+        def insertStore():
+            # new_store = {"store_name": store_name}
+            pass
+
+        reg_btn = QPushButton("Register")
+        reg_btn.pressed.connect(insertStore)
+        btn_layout.addWidget(reg_btn)
+        
+        cancel_btn = QPushButton("Cancel")
+        cancel_btn.pressed.connect(lambda: self.changeTab(0))
+        btn_layout.addWidget(cancel_btn)
+        
+        #Nesting Layouts
+        aisle_layout.addLayout(name_layout)
+        aisle_layout.addLayout(row_layout)
+        aisle_layout.addWidget(add_btn)
+        aisle_layout.addWidget(self.registerTableWidget)
+        register_layout.addLayout(aisle_layout)
+        register_layout.addLayout(btn_layout)
         
         register_widget = QWidget()
         register_widget.setLayout(register_layout)
         self.stacklayout.addWidget(register_widget)
     
     def shopping_list_tab(self):
+        self.resize(500, 300)
         self.toolbar.toggleViewAction().trigger()
         shopping_list_layout = QVBoxLayout()
 
-        enter_item_layout = QVBoxLayout()
+        nest_layout = QVBoxLayout()
+        
+        user_item = QLineEdit()
+        user_item.setPlaceholderText("E.g. Bananas")
+
         
         self.store = self.stores[self.listWidget.row(self.listWidget.currentItem())]
-        self.aisles = QComboBox()
+        self.aisles = MyComboBox()
+        self.aisles.setPlaceholderText("Which Aisle is this in?")
+        self.aisles.setCurrentIndex(-1)
         self.store.pop('store_name')
         #alphanumeric sort for keys
         def natural_key(string_):
@@ -125,36 +196,39 @@ class MainWindow(QMainWindow):
             name = self.store[aisle_num]
             self.nums.append(aisle_num)
             self.aisles.addItem(name)
-        user_item = QLineEdit()
+        
         def add_item():
-            if user_item.text():
+            if user_item.text() and self.aisles.currentIndex() != -1:
                 selectedAisle_name = self.aisles.currentText()
                 selectedAisle_num = self.nums[self.aisles.currentIndex()]
                 rowPos = self.tableWidget.rowCount()
                 self.tableWidget.insertRow(rowPos)
-                self.tableWidget.setItem(rowPos, 0, QTableWidgetItem(user_item.text()))
-                self.tableWidget.setItem(rowPos, 1, QTableWidgetItem(selectedAisle_num))
-                self.tableWidget.setItem(rowPos, 2, QTableWidgetItem(selectedAisle_name))
+                self.tableWidget.setItem(rowPos, 0, MyTableWidgetItem(selectedAisle_num))
+                self.tableWidget.setItem(rowPos, 1, MyTableWidgetItem(user_item.text()))
+                self.tableWidget.setItem(rowPos, 2, MyTableWidgetItem(selectedAisle_name))
+                self.tableWidget.resizeColumnToContents(0)
+                self.tableWidget.sortItems(0, Qt.AscendingOrder)
                 user_item.clear()
-            else: None
+                self.aisles.setCurrentIndex(-1)
+            else: None 
         add_btn = QPushButton("Add Item")
         add_btn.pressed.connect(add_item)
         
-
-        enter_item_layout.addWidget(user_item)
-        enter_item_layout.addWidget(self.aisles)
-        enter_item_layout.addWidget(add_btn)
-        shopping_list_layout.addLayout(enter_item_layout)
+        nest_layout.addWidget(user_item)
+        nest_layout.addWidget(self.aisles)
+        nest_layout.addWidget(add_btn)
+        shopping_list_layout.addLayout(nest_layout)
 
         self.tableWidget = QTableWidget()
         self.tableWidget.setColumnCount(3)
         self.tableWidget.verticalHeader().setVisible(False)
-        self.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Item"))
-        self.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Row"))
-        self.tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("Aisle"))
+        self.tableWidget.setHorizontalHeaderItem(0, MyTableWidgetItem("Row"))
+        self.tableWidget.setHorizontalHeaderItem(1, MyTableWidgetItem("Item"))
+        self.tableWidget.setHorizontalHeaderItem(2, MyTableWidgetItem("Aisle"))
         self.tableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.tableWidget.setColumnWidth(0, 20)
+        self.tableWidget.setColumnWidth(1, 220)
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         
         
         cancel_btn = QPushButton("Cancel")
@@ -182,6 +256,7 @@ class MainWindow(QMainWindow):
         self.tableWidget.setRowCount(0)
     
     def changeTab(self, page_idx):
+        self.resize(500, 300)
         #update the stores list every page change
         db = open("stores.json", "r")
         content = db.read()
@@ -193,6 +268,7 @@ class MainWindow(QMainWindow):
             None
         #entering main menu
         elif page_idx == 0:
+            self.resize(300, 300)
             self.toolbar.toggleViewAction().trigger()
             None
         if page_idx == 2:
@@ -200,6 +276,35 @@ class MainWindow(QMainWindow):
             self.update_shopping_tab()
         self.stacklayout.setCurrentIndex(page_idx)
 
+#overwrite tablewidget's sort method to be numerical
+class MyTableWidgetItem(QTableWidgetItem):
+    def __lt__(self, other):
+        try:
+            return int(self.text()) < int(other.text())
+        except:
+            return QTableWidgetItem.__lt__(self, other)
+class MyComboBox(QComboBox):
+    # https://code.qt.io/cgit/qt/qtbase.git/tree/src/widgets/widgets/qcombobox.cpp?h=5.15.2#n3173
+    def paintEvent(self, event):
+        
+        painter = QStylePainter(self)
+        painter.setPen(self.palette().color(QPalette.Text))
+
+        # draw the combobox frame, focusrect and selected etc.
+        opt = QStyleOptionComboBox()
+        self.initStyleOption(opt)
+        painter.drawComplexControl(QStyle.CC_ComboBox, opt)
+
+        if self.currentIndex() < 0:
+            opt.palette.setBrush(
+                QPalette.ButtonText,
+                opt.palette.brush(QPalette.ButtonText).color().lighter(),
+            )
+            if self.placeholderText():
+                opt.currentText = self.placeholderText()
+
+        # draw the icon and text
+        painter.drawControl(QStyle.CE_ComboBoxLabel, opt)
 
 app = QApplication(sys.argv)
 
