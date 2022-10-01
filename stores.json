@@ -18,5 +18,12 @@
         "4": "Bakery",
         "5": "Hygiene",
         "11": "Chips"
+    },
+    {
+        "store_name": "Walmart",
+        "1": "Appliances",
+        "2": "Toys",
+        "3": "Hygiene",
+        "4": "Tech"
     }
 ]

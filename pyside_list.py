@@ -170,7 +170,6 @@ class MainWindow(QMainWindow):
         category_label = QLabel("Contains:")
         self.category = QLineEdit()
         self.category.setPlaceholderText("E.g. Desserts/Pasteries")
-        
 
         row_layout = QHBoxLayout()
         row_layout.addWidget(row_label)
@@ -178,7 +177,6 @@ class MainWindow(QMainWindow):
         row_layout.addWidget(category_label)
         row_layout.addWidget(self.category)
         
-
         self.registerTableWidget = QTableWidget()
         self.registerTableWidget.setColumnCount(2)
         self.registerTableWidget.verticalHeader().setVisible(False)
@@ -196,7 +194,8 @@ class MainWindow(QMainWindow):
                 self.registerTableWidget.sortItems(0, Qt.AscendingOrder)
                 self.row.setValue(self.row.value() + 1)
                 self.category.clear()
-            else: None 
+            else: None
+        self.category.returnPressed.connect(add_aisle)
         add_btn = QPushButton("Add Aisle")
         add_btn.pressed.connect(add_aisle)
         row_layout.addWidget(add_btn)
@@ -257,7 +256,7 @@ class MainWindow(QMainWindow):
         
         self.user_item = QLineEdit()
         self.user_item.setPlaceholderText("E.g. Bananas")
-
+        
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
         self.categories = QComboBox()
         self.categories.setPlaceholderText("Which Aisle is this in?")
@@ -298,6 +297,7 @@ class MainWindow(QMainWindow):
                 self.user_item.clear()
                 self.categories.setCurrentIndex(-1)
             else: None 
+        self.user_item.returnPressed.connect(add_item)
         add_btn = QPushButton("Add Item")
         add_btn.pressed.connect(add_item)
         
