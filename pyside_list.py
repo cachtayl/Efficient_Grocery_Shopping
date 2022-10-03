@@ -14,26 +14,22 @@ class MainWindow(QMainWindow):
             db.write('[]')
             db.close()
         #initialize list of stores
-        db = open("stores.json", "r")
-        content = db.read()
-        self.stores = json.loads(content)
-        #BUG will break if json file is empty
-        self.store = self.stores[0]
-        db.close()
-        
+        self.update_stores()
+        #BUG will break if stores is empty
+        # self.store = self.stores[0]
+    
         self.initUI()
 
     def initUI(self):
         super().__init__()
         font = self.font()
         font.setPointSize(10)
-        # set the font for the top level window (and any of its children):
         self.window().setFont(font)
+        
         self.stacklayout = QStackedLayout()
         
         self.menuTab()          #stack index0
         self.registerTab()      #stack index1
-        self.shoppingListTab()  #stack index2
         self.setWindowTitle("Main Menu")
         self.resize(300, 300)
         
@@ -43,7 +39,7 @@ class MainWindow(QMainWindow):
 
     def menuTab(self):
         main_menu_layout = QVBoxLayout()
-        
+
         self.toolbar = QToolBar("Store Toolbar")
         self.toolbar.setOrientation(Qt.Vertical)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
@@ -83,7 +79,7 @@ class MainWindow(QMainWindow):
         list_btn.setEnabled(False)
         main_menu_layout.addWidget(list_btn)
         
-        #enable button if there is a selection
+        #enable 'Make Shopping List' button if there is a selection
         def enable():  
             if len(self.storesListWidget.selectedItems()) != 0:
                 list_btn.setEnabled(True)
@@ -103,13 +99,15 @@ class MainWindow(QMainWindow):
         for store in self.stores:
             listWidgetItem = QListWidgetItem(store['store_name'])
             self.storesListWidget.addItem(listWidgetItem)
-    def delete_store(self):
+    def update_stores(self):
         #update the stores list 
         db = open("stores.json", "r")
         content = db.read()
         self.stores = json.loads(content)
         db.close()
-        
+    
+    def delete_store(self):
+        self.update_stores()
         selected = self.storesListWidget.currentItem()
         selected_idx = self.storesListWidget.row(selected)
         del self.stores[selected_idx]
@@ -118,16 +116,10 @@ class MainWindow(QMainWindow):
         db = open("stores.json", "w")
         db.write(json_obj)
         db.close()
+        
         self.storesListWidget.takeItem(selected_idx)
-        # self.changeTab(0)
-        pass
     def edit_store(self):
-        #update the stores list 
-        db = open("stores.json", "r")
-        content = db.read()
-        self.stores = json.loads(content)
-        db.close()
-
+        self.update_stores()
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
         self.setWindowTitle("Edit "+ self.store['store_name'])
         self.resize(500, 300)
@@ -147,7 +139,7 @@ class MainWindow(QMainWindow):
         self.stacklayout.setCurrentIndex(1)
 
     def registerTab(self):
-        self.toolbar.toggleViewAction().trigger()
+        # self.toolbar.toggleViewAction().trigger()
         register_layout = QVBoxLayout() 
         aisle_layout = QVBoxLayout()
         
@@ -207,13 +199,14 @@ class MainWindow(QMainWindow):
                 category = self.registerTableWidget.item(i, 1)
                 category = category.text()
                 new_store.setdefault(row, []).append(category)
+            
             self.stores.append(new_store)
             json_obj = json.dumps(self.stores, indent=4)
-
             db = open("stores.json", "w")
             db.write(json_obj)
             db.close()
             self.changeTab(0)
+
         reg_btn = QPushButton("Register")
         reg_btn.pressed.connect(insertStore)
         
@@ -228,14 +221,13 @@ class MainWindow(QMainWindow):
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(reg_btn)
         btn_layout.addWidget(cancel_btn)
-
-        #Nesting Layouts
         register_layout.addLayout(aisle_layout)
         register_layout.addLayout(btn_layout)
         
         register_widget = QWidget()
         register_widget.setLayout(register_layout)
         self.stacklayout.addWidget(register_widget)
+    
     def resetRegisterTab(self):
         self.store_name.clear()
         self.row.setValue(1)
@@ -244,7 +236,6 @@ class MainWindow(QMainWindow):
         self.registerTableWidget.setRowCount(0)
 
     def shoppingListTab(self):
-        self.toolbar.toggleViewAction().trigger()
         shopping_list_layout = QVBoxLayout()
 
         nest_layout = QVBoxLayout()
@@ -253,14 +244,12 @@ class MainWindow(QMainWindow):
         item_label = QLabel("Item:")
         self.user_item = QLineEdit()
         self.user_item.setPlaceholderText("E.g. Bananas")
-        item_layout.addWidget(item_label)
-        item_layout.addWidget(self.user_item)
+        
+        categories_label = QLabel("Associated Aisle: ")
+        self.categories = QComboBox()
+        self.categories.setPlaceholderText("")
         
         self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.categories = MyComboBox()
-        self.categories.setPlaceholderText("Which Aisle is this in?")
-        self.categories.setCurrentIndex(-1)
-        
         self.nums = []
         self.store.pop('store_name')
         for aisle_num in self.store.keys():
@@ -268,7 +257,8 @@ class MainWindow(QMainWindow):
             for element in category:
                 self.categories.addItem(element)
                 self.nums.append(aisle_num)
-    
+        self.categories.setCurrentIndex(-1)
+        
         self.shoppingTableWidget = QTableWidget()
         self.shoppingTableWidget.setColumnCount(3)
         self.shoppingTableWidget.verticalHeader().setVisible(False)
@@ -298,9 +288,11 @@ class MainWindow(QMainWindow):
         add_btn = QPushButton("Add Item")
         add_btn.pressed.connect(add_item)
         
-
+        item_layout.addWidget(item_label)
+        item_layout.addWidget(self.user_item)
+        item_layout.addWidget(categories_label)
+        item_layout.addWidget(self.categories)
         nest_layout.addLayout(item_layout)
-        nest_layout.addWidget(self.categories)
         nest_layout.addWidget(add_btn)
         shopping_list_layout.addLayout(nest_layout)
 
@@ -313,78 +305,45 @@ class MainWindow(QMainWindow):
         shopping_list = QWidget()
         shopping_list.setLayout(shopping_list_layout)
         self.stacklayout.addWidget(shopping_list)
-    def resetShoppingListTab(self):
-        self.user_item.clear()
-        self.categories.clear()
-        self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-        self.nums = []
-        self.store.pop('store_name')
-        for aisle_num in self.store.keys():
-            category = self.store[aisle_num]
-            for element in category:
-                self.categories.addItem(element)
-                self.nums.append(aisle_num)
-        self.shoppingTableWidget.clearContents()
-        self.shoppingTableWidget.setRowCount(0)
-    
+
     def changeTab(self, page_idx):
-        #update the stores list every page change
-        db = open("stores.json", "r")
-        content = db.read()
-        self.stores = json.loads(content)
-        db.close()
-        #leaving main menu
+        # Update the stores list every page change
+        self.update_stores()
+        # Leaving menu tab
         if self.stacklayout.currentIndex() == 0:
             self.toolbar.toggleViewAction().trigger()
-            None
-        #entering main menu
+
+        # Leaving shoppingList tab
+        elif self.stacklayout.currentIndex() == 2:
+            currShoppingList = self.stacklayout.currentWidget()
+            currShoppingList.deleteLater()
+        
+        # Switching between pages of the stacklayout
         if page_idx == 0:
             self.setWindowTitle("Main Menu")
             self.resize(300, 300)
             self.toolbar.toggleViewAction().trigger()
             self.resetMenuTab()
-            None
+            
         elif page_idx == 1:
             self.setWindowTitle("Register Store")
             self.resize(500, 300)
             self.resetRegisterTab()
         elif page_idx == 2:
-            self.store = self.stores[self.storesListWidget.row(self.storesListWidget.currentItem())]
-            self.setWindowTitle(self.store['store_name']+" Shopping List")
+            self.shoppingListTab()  #stack index2
+            store_name = self.storesListWidget.currentItem()
+            self.setWindowTitle(store_name.text()+" Shopping List")
             self.resize(500, 300)
-            #Update the shopping list Tab
-            self.resetShoppingListTab()
+
         self.stacklayout.setCurrentIndex(page_idx)
 
-#overwrite tablewidget's less than method to numerically sort
+# overwrite tablewidget's less than method to numerically sort
 class MyTableWidgetItem(QTableWidgetItem):
     def __lt__(self, other):
         try:
             return int(self.text()) < int(other.text())
         except:
             return QTableWidgetItem.__lt__(self, other)
-class MyComboBox(QComboBox):
-    # https://code.qt.io/cgit/qt/qtbase.git/tree/src/widgets/widgets/qcombobox.cpp?h=5.15.2#n3173
-    def paintEvent(self, event):
-        
-        painter = QStylePainter(self)
-        painter.setPen(self.palette().color(QPalette.Text))
-
-        # draw the combobox frame, focusrect and selected etc.
-        opt = QStyleOptionComboBox()
-        self.initStyleOption(opt)
-        painter.drawComplexControl(QStyle.CC_ComboBox, opt)
-
-        if self.currentIndex() < 0:
-            opt.palette.setBrush(
-                QPalette.ButtonText,
-                opt.palette.brush(QPalette.ButtonText).color().lighter(),
-            )
-            if self.placeholderText():
-                opt.currentText = self.placeholderText()
-
-        # draw the icon and text
-        painter.drawControl(QStyle.CE_ComboBoxLabel, opt)
 
 app = QApplication(sys.argv)
 
