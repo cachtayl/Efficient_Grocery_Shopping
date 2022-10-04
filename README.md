@@ -2,14 +2,14 @@
 <div>
     <h3>Description:</h3> <p>Wouldn't it be nice if your grocery shopping list was automatically sorted by your item's aisle number.
     With a sorted list you would never again wander throughout the store looking for items, traversing back and forth, wasting precious time.
-    This application will generate a sorted grocery shopping list for you!</p>
+    This application will generate a sorted grocery shopping list for you, so you can be in and checking out ASAP!</p>
     <p><b>Features: </b>
     <li>Add your local store for later use</li>
     <li>Delete a store from your database</li>
     <li>Edit a store from your database</li>
     <li>Make a shopping list by inputing an item and selecting the aisle it would be in from the dropdown box</li>
     <p>
-    <img src="media/screenshot.PNG" alt="MainMenu" width="900" height="800"><br>
+    <!-- <img src="media/screenshot.PNG" alt="MainMenu" width="900" height="800"><br> -->
     <p><b>How to run:</b>
     <br>1.) Click on "Code" button on top right
     <br>2.) Then "Download ZIP"
