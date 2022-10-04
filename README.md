@@ -11,11 +11,13 @@
     <p>
     <!-- <img src="media/screenshot.PNG" alt="MainMenu" width="900" height="800"><br> -->
     <p><b>How to run:</b>
-    <ol> Click on "Code" button on top right</ol>
-    <ol>2.) Then "Download ZIP"</ol>
-    <ol>3.) Extract the files</ol>
-    <ol>4.) Open the dist/Groceries List Generator.exe</ol>
-    <ol>5.) Reference this page for help</ol>
+    <ol type="1">
+    <li>Click on "Code" button on top right</li>
+    <li>Then "Download ZIP"</li>
+    <li>Extract the files</li>
+    <li>Open the dist/Groceries List Generator.exe</li>
+    <li>Reference this page for help</li>
+    </ol>
     </p>
     <p><b>Current Limitations(Will be fixed in later versions):</b>
     <li>User runs their own database of stores, should be sharable or pulling from a greater database</li>
