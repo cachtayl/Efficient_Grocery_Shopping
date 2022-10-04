@@ -265,6 +265,7 @@ class MainWindow(QMainWindow):
         self.user_item.setPlaceholderText("E.g. Bananas")
         
         cat_layout = QHBoxLayout()
+        cat_layout.setAlignment(Qt.AlignLeft)
         categories_label = QLabel("Associated Aisle: ")
         self.categories = QComboBox()
 
