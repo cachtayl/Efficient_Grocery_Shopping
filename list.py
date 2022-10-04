@@ -2,6 +2,7 @@ import json
 import os.path
 import re
 
+
 def main():
     #clears the terminal
     os.system('clear')
