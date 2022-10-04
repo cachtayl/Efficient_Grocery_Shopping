@@ -1,7 +1,33 @@
+'''
+Created October 2022
+@author- camtaylor1999@gmail.com
+Groceries List Generator- an application that sorts your shopping list by row number
+https://github.com/cachtayl/Groceries-List-Generator
+
+Usage:  open Groceries List Generator.exe in the dist folder
+Output: Pop-up window that can switch between three pages(main menu, register a store, generate shopping list)
+
+High-level GUI Architecture: There is a stacked layout that populates the main window of this application. 
+Within that stacked layout there are three pages that can visually overwrite eachother, main menu page, 
+register a store page, and generate sorted list page. The menu and register pages are created at startup
+and will update their contents everytime the user changes page. However, the generate sorted list page will
+be dynamically created and deleted on a need basis. It will delete itself after it's event loop has ended, 
+i.e goes back to main menu.
+
+Future GUI Ideas:
+- Make the associated aisle dropdown menu searchable
+- Add a help button in the menu
+- Change from TableWidget to TableView by adding an abstract model of the stores data
+
+Later implementations:
+- Change db from json to SQlite or MySQL
+
+Note: I use 'tabs' and 'pages' interchangeably throughout documentation
+
+'''
 import json
 import os
 import sys
-
 from PySide2.QtCore import QSize, Qt
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (QAction, QApplication, QComboBox, QHBoxLayout,
@@ -11,6 +37,7 @@ from PySide2.QtWidgets import (QAction, QApplication, QComboBox, QHBoxLayout,
                                QToolBar, QVBoxLayout, QWidget)
 
 basedir = os.path.dirname(__file__)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -31,14 +58,16 @@ class MainWindow(QMainWindow):
 
         self.stacklayout = QStackedLayout()
 
-        self.menuTab()  # stack index0
-        self.registerTab()  # stack index1
+        self.menuTab()      # stack index 0
+        self.registerTab()  # stack index 1
 
+        # Application will start on the main menu with the toolbar triggered
         self.setWindowTitle("Main Menu")
         self.resize(300, 300)
         self.toolbar.toggleViewAction().setChecked(False)
         self.toolbar.toggleViewAction().trigger()
-
+        
+        # set the stack as main layout
         widget = QWidget()
         widget.setLayout(self.stacklayout)
         self.setCentralWidget(widget)
@@ -153,7 +182,6 @@ class MainWindow(QMainWindow):
         self.stacklayout.setCurrentIndex(1)
 
     def registerTab(self):
-        # self.toolbar.toggleViewAction().trigger()
         register_layout = QVBoxLayout()
         aisle_layout = QVBoxLayout()
 
@@ -338,9 +366,9 @@ class MainWindow(QMainWindow):
         self.stacklayout.addWidget(shopping_list)
 
     def changeTab(self, page_idx):
-        # Update the stores list every page change
+        # Update self.stores every page change
         self.update_stores()
-        # Leaving menu tab
+        # Conditions for leaving specific pages
         if self.stacklayout.currentIndex() == 0:
             self.toolbar.toggleViewAction().trigger()
         # Leaving shoppingList tab, will delete that page and recreate on demand
@@ -348,7 +376,7 @@ class MainWindow(QMainWindow):
             currShoppingList = self.stacklayout.currentWidget()
             currShoppingList.deleteLater()
 
-        # Switching between pages of the stacklayout
+        # Conditions for entering specific pages
         if page_idx == 0:
             self.setWindowTitle("Main Menu")
             self.resize(300, 300)
@@ -367,13 +395,15 @@ class MainWindow(QMainWindow):
 
         self.stacklayout.setCurrentIndex(page_idx)
 
-# overwrite tablewidget's less than method to numerically sort
+# overwrite PySide's tablewidget to have less than method numerically sort instead of lexographically(1, 11, 2, 3...)
+
 class MyTableWidgetItem(QTableWidgetItem):
     def __lt__(self, other):
         try:
             return int(self.text()) < int(other.text())
         except:
             return QTableWidgetItem.__lt__(self, other)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
