@@ -5,10 +5,10 @@
     This application will generate a sorted grocery shopping list for you, so you can be in and checking out ASAP!</p>
     <p><b>How to run:</b>
     <ol type="1">
-    <li>Click on "Code" button on top right</li>
-    <li>Then "Download ZIP"</li>
-    <li>Extract the files</li>
-    <li>Open the dist/Groceries List Generator.exe</li>
+    <li>Click on Groceries-List-Generator-Installer.exe</li>
+    <li>Download the Groceries-List-Generator-Installer.exe</li>
+    <li>Follow the Installer instructions</li>
+    <li>Open Groceries List Generator.exe</li>
     <li>Reference this page for help</li>
     </ol>
     </p>
