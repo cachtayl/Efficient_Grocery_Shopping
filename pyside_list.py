@@ -1,13 +1,16 @@
-from PySide2.QtGui import QIcon, QFont, QPalette, QColor
-from PySide2.QtWidgets import *
-from PySide2.QtCore import QSize, Qt
 import json
 import os
-import re
 import sys
-import faulthandler
-faulthandler.enable()
 
+from PySide2.QtCore import QSize, Qt
+from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import (QAction, QApplication, QComboBox, QHBoxLayout,
+                               QLabel, QLineEdit, QListWidget, QListWidgetItem,
+                               QMainWindow, QPushButton, QSpinBox,
+                               QStackedLayout, QTableWidget, QTableWidgetItem,
+                               QToolBar, QVBoxLayout, QWidget)
+
+basedir = os.path.dirname(__file__)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -18,9 +21,6 @@ class MainWindow(QMainWindow):
             db.close()
         # initialize list of stores
         self.update_stores()
-        # BUG will break if stores is empty
-        # self.store = self.stores[0]
-
         self.initUI()
 
     def initUI(self):
@@ -33,7 +33,7 @@ class MainWindow(QMainWindow):
 
         self.menuTab()  # stack index0
         self.registerTab()  # stack index1
-        
+
         self.setWindowTitle("Main Menu")
         self.resize(300, 300)
         self.toolbar.toggleViewAction().setChecked(False)
@@ -49,18 +49,18 @@ class MainWindow(QMainWindow):
         self.toolbar = QToolBar("Store Toolbar")
         self.toolbar.setOrientation(Qt.Vertical)
         self.addToolBar(Qt.LeftToolBarArea, self.toolbar)
-        self.toolbar.setIconSize(QSize(20, 20))
-    
+        self.toolbar.setIconSize(QSize(30, 30))
+
         # Plus icon by Icons8: https://icons8.com/icon/3QiOfjluKyC9/plus
         register_btn = QAction(
-            QIcon("./icons/icons8-plus-24.png"), "Add Store", self)
+            QIcon(os.path.join(basedir, "icons", "icons8-plus-24.png")), "Add Store", self)
         register_btn.setToolTip("Add a Store")
         register_btn.triggered.connect(lambda: self.changeTab(1))
         self.toolbar.addAction(register_btn)
 
         # Delete icon by Icons8: https://icons8.com/icon/lenQJDeFgQWn/minus
         delete_btn = QAction(
-            QIcon("./icons/icons8-subtract-24.png"), "Delete Store", self)
+            QIcon(os.path.join(basedir, "icons", "icons8-subtract-24.png")), "Delete Store", self)
         delete_btn.setToolTip("Delete selected Store")
         delete_btn.triggered.connect(self.delete_store)
         self.toolbar.addAction(delete_btn)
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
 
         # Edit icon by Icons8: "https://img.icons8.com/ios-glyphs/30/000000/edit--v1.png"
         edit_btn = QAction(
-            QIcon("./icons/icons8-edit-24.png"), "Edit Store", self)
+            QIcon(os.path.join(basedir, "icons", "icons8-edit-24.png")), "Edit Store", self)
         edit_btn.setToolTip("Edit selected Store")
         edit_btn.triggered.connect(self.edit_store)
         self.toolbar.addAction(edit_btn)
@@ -263,12 +263,11 @@ class MainWindow(QMainWindow):
         item_label = QLabel("Item:")
         self.user_item = QLineEdit()
         self.user_item.setPlaceholderText("E.g. Bananas")
-        
+
         cat_layout = QHBoxLayout()
         cat_layout.setAlignment(Qt.AlignLeft)
         categories_label = QLabel("Associated Aisle: ")
         self.categories = QComboBox()
-
 
         self.store = self.stores[self.storesListWidget.row(
             self.storesListWidget.currentItem())]
@@ -360,7 +359,7 @@ class MainWindow(QMainWindow):
             self.resize(1000, 600)
             self.resetRegisterTab()
         elif page_idx == 2:
-            #create on this tab on demand
+            # create on this tab on demand
             self.shoppingListTab()
             store_name = self.storesListWidget.currentItem()
             self.setWindowTitle(store_name.text()+" Shopping List")
@@ -376,7 +375,10 @@ class MyTableWidgetItem(QTableWidgetItem):
         except:
             return QTableWidgetItem.__lt__(self, other)
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-app.exec_()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    # Grocery Bag icon: https://icon-icons.com/icon/grocery-bag-shopping-bag-marketplace/225198
+    app.setWindowIcon(QIcon(os.path.join(basedir, "icons", "grocerybag.ico")))
+    window = MainWindow()
+    window.show()
+    app.exec_()
