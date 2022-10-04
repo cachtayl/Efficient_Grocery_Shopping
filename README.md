@@ -12,6 +12,7 @@
     <li>Reference this page for help</li>
     </ol>
     </p>
+    <p><b>Note: </b>Currently the application will come with an example store, "Vons / Laurel Canyon Blvd, Los Angeles, CA".</p>
     <p><b>Features: </b>
     <li>Add your local store for later use</li>
     <li>Delete a store from your database</li>
@@ -25,10 +26,9 @@
     <li>Database is run through a json file</li>
     <li>Dropdown list for the associated aisle should be searchable, should be easier to find the aisle your item would be in</li>
     <p>
-    <p><b>Note: </b>Currently the application will come with an example store, "Vons / Laurel Canyon Blvd, Los Angeles, CA".</p>
+    <p><b>High-level GUI Architecture:</b> There is a stacked layout that populates the main window of this application. Within that stacked layout there are three pages that can visually overwrite eachother, main menu page, register a store page, and generate sorted list page. The menu and register pages are created at startup and will update their contents everytime the user changes page. However, the generate sorted list page will be dynamically created and deleted on a need basis. It will delete itself after it's event loop has ended, i.e goes back to main menu.</p>
     <h1> Contributors </h1>
-    If you'd like to contribute, please fork the repository and make changes as you'd like. <br><b>Pull requests are warmly welcome.</b>
-    <p></p>
+    <p>If you'd like to contribute, please fork the repository and make changes as you'd like. <br><b>Pull requests are warmly welcome.</b></p>
     <h1> License </h1>
     <p>MIT License 2022 - Cameron Taylor</p>
 </div>
