@@ -24,6 +24,8 @@ Later implementations:
 
 Note: I use 'tabs' and 'pages' interchangeably throughout documentation
 
+run 'python -m PyInstaller pyside_list.spec' to rebuild app
+
 '''
 import json
 import os
