@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
         db.close()
 
         self.storesListWidget.takeItem(selected_idx)
-
+    #BUG edit store doesnt switch index to register tab
     def edit_store(self):
         self.update_stores()
         self.store = self.stores[self.storesListWidget.row(
